@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FidePay Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class'
+    }
+  </script>
+</head>
+
+<body class="bg-slate-100 dark:bg-slate-900 text-gray-800 dark:text-gray-100 transition-colors duration-300">
+
+<nav class="bg-indigo-700 dark:bg-indigo-900 text-white p-5 flex justify-between items-center sticky top-0 z-50 transition-colors duration-300">
+  <div class="flex items-center gap-4">
+    <button id="menuBtn" class="text-2xl hover:opacity-80 transition">☰</button>
+    <h1 class="text-2xl font-bold">Kayhoobee Bank LTD</h1>
+  </div>
+  
+  <button id="darkModeToggle" class="p-2 bg-indigo-600 dark:bg-indigo-800 rounded-full hover:scale-105 transition-transform flex items-center justify-center w-10 h-10">
+    <span id="themeIcon" class="text-xl">🌙</span>
+  </button>
+</nav>
+
+<div class="flex min-h-screen">
+
+<aside id="sidebar"
+class="fixed inset-y-0 left-0 z-40 w-64 bg-indigo-800 dark:bg-slate-950 text-white transform -translate-x-full transition-transform duration-300">
+
+<div class="p-6 text-2xl font-bold border-b border-indigo-700 dark:border-slate-800">
+FidePay
+</div>
+
+<nav class="p-4 space-y-2">
+<a href="#" id="dashboardLink" class="block px-4 py-3 rounded-lg hover:bg-indigo-700 dark:hover:bg-slate-800">Dashboard</a>
+<a href="#" id="paymentsLink" class="block px-4 py-3 rounded-lg hover:bg-indigo-700 dark:hover:bg-slate-800">Payments</a>
+<a href="#" id="cardsLink" class="block px-4 py-3 rounded-lg hover:bg-indigo-700 dark:hover:bg-slate-800">Cards</a>
+<a href="#" id="beneficiariesLink" class="block px-4 py-3 rounded-lg hover:bg-indigo-700 dark:hover:bg-slate-800">Beneficiaries</a>
+<a href="#" id="profileLink" class="block px-4 py-3 rounded-lg hover:bg-indigo-700 dark:hover:bg-slate-800">Profile</a>
+</nav>
+</aside>
+
+<div id="overlay" class="hidden fixed inset-0 bg-black/40 z-30"></div>
+
+<main class="flex-1 p-6 max-w-7xl mx-auto w-full">
+
+<div id="homePage">
+
+<div class="mb-8">
+<h2 class="text-3xl font-bold text-gray-800 dark:text-white">Welcome back, Fidelis 👋</h2>
+<p class="text-gray-500 dark:text-gray-400">Manage your finances with ease</p>
+</div>
+
+<div class="mb-8 grid grid-cols-2 sm:grid-cols-4 gap-4">
+  <button onclick="openPaymentsSubView('bills')" class="flex flex-col items-center justify-center p-4 bg-white dark:bg-slate-800 rounded-2xl shadow hover:shadow-md hover:-translate-y-0.5 transition-all text-center">
+    <span class="text-2xl mb-2">💡</span>
+    <span class="font-semibold text-sm">Pay Bills</span>
+  </button>
+  <button onclick="openPaymentsSubView('airtime')" class="flex flex-col items-center justify-center p-4 bg-white dark:bg-slate-800 rounded-2xl shadow hover:shadow-md hover:-translate-y-0.5 transition-all text-center">
+    <span class="text-2xl mb-2">📱</span>
+    <span class="font-semibold text-sm">Airtime</span>
+  </button>
+  <button onclick="openSection('dashboardPanel')" class="flex flex-col items-center justify-center p-4 bg-white dark:bg-slate-800 rounded-2xl shadow hover:shadow-md hover:-translate-y-0.5 transition-all text-center">
+    <span class="text-2xl mb-2">💸</span>
+    <span class="font-semibold text-sm">Transfer</span>
+  </button>
+  <button onclick="openPaymentsSubView('request')" class="flex flex-col items-center justify-center p-4 bg-white dark:bg-slate-800 rounded-2xl shadow hover:shadow-md hover:-translate-y-0.5 transition-all text-center">
+    <span class="text-2xl mb-2">💰</span>
+    <span class="font-semibold text-sm">Request Money</span>
+  </button>
+</div>
+
+<div class="mb-8">
+<div class="relative overflow-hidden bg-white dark:bg-slate-800 rounded-2xl shadow p-8">
+
+<img src="images/account balance.png"
+class="absolute inset-0 w-full h-full object-cover opacity-10">
+
+<div class="relative z-10">
+<h3 class="text-gray-500 dark:text-gray-400 text-lg">Account Balance</h3>
+
+<p class="text-sm text-gray-400 dark:text-gray-500 mt-2">
+Savings Account • Individual • **********54
+</p>
+
+<div class="flex items-center gap-3 mt-4">
+  <p id="balanceAmount" class="text-4xl font-bold text-gray-800 dark:text-white transition-opacity duration-300">
+  ₦1,250,000
+  </p>
+  <span id="balanceTrend" class="text-xs font-semibold px-2 py-1 rounded bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 hidden transition-all">Live Updated</span>
+</div>
+
+<div class="flex gap-4 mt-6">
+
+<button id="refreshBalanceBtn"
+class="bg-indigo-700 text-white px-4 py-2 rounded-lg hover:bg-indigo-800 flex items-center gap-2 transition">
+<span id="refreshIcon">↻</span> Refresh Balance
+</button>
+
+<button id="hideBalanceBtn"
+class="bg-slate-200 dark:bg-slate-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition">
+👁 Hide Balance
+</button>
+
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="mt-8 grid gap-6 md:grid-cols-3">
+
+<div class="relative overflow-hidden bg-white dark:bg-slate-800 rounded-2xl shadow p-6">
+<img src="images/transfers.png" class="absolute inset-0 w-full h-full object-cover opacity-10">
+<div class="relative z-10">
+<h3 class="text-lg font-semibold mb-2">Instant Transfers</h3>
+<p class="text-gray-500 dark:text-gray-400">Move money quickly across your network.</p>
+</div>
+</div>
+
+<div class="relative overflow-hidden bg-white dark:bg-slate-800 rounded-2xl shadow p-6">
+<img src="images/virtual cards.png" class="absolute inset-0 w-full h-full object-cover opacity-10">
+<div class="relative z-10">
+<h3 class="text-lg font-semibold mb-2">Virtual Cards</h3>
+<p class="text-gray-500 dark:text-gray-400">Secure virtual cards for payments.</p>
+</div>
+</div>
+
+<div class="relative overflow-hidden bg-white dark:bg-slate-800 rounded-2xl shadow p-6">
+<img src="images/expense.png" class="absolute inset-0 w-full h-full object-cover opacity-10">
+<div class="relative z-10">
+<h3 class="text-lg font-semibold mb-2">Expense Tracking</h3>
+<p class="text-gray-500 dark:text-gray-400">Track spending in real time.</p>
+</div>
+</div>
+
+<div class="relative overflow-hidden bg-white dark:bg-slate-800 rounded-2xl shadow p-6">
+<img src="images/secure.png" class="absolute inset-0 w-full h-full object-cover opacity-10">
+<div class="relative z-10">
+<h3 class="text-lg font-semibold mb-2">Secure Payments</h3>
+<p class="text-gray-500 dark:text-gray-400">Advanced encryption protection.</p>
+</div>
+</div>
+
+<div class="relative overflow-hidden bg-white dark:bg-slate-800 rounded-2xl shadow p-6">
+<img src="images/international.png" class="absolute inset-0 w-full h-full object-cover opacity-10">
+<div class="relative z-10">
+<h3 class="text-lg font-semibold mb-2">International Payments</h3>
+<p class="text-gray-500 dark:text-gray-400">Send global payments easily.</p>
+</div>
+</div>
+<div class="relative overflow-hidden bg-white dark:bg-slate-800 rounded-2xl shadow p-6">
+<img src="images/loans.png" class="absolute inset-0 w-full h-full object-cover opacity-10">
+<div class="relative z-10">
+<h3 class="text-lg font-semibold mb-2">Loans</h3>
+<p class="text-gray-500 dark:text-gray-400">Track spending in real time.</p>
+</div>
+</div>
+
+</div>
+
+</div>
+
+<div id="dashboardPanel" class="hidden mt-8">
+<button class="backBtn mb-6 bg-slate-200 dark:bg-slate-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-lg">← Back</button>
+
+<div class="bg-white dark:bg-slate-800 rounded-2xl shadow p-6">
+<h3 class="text-2xl font-semibold mb-6">Dashboard</h3>
+
+<div class="mb-8 p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border dark:border-slate-700">
+  <div class="flex justify-between items-center mb-4">
+    <h4 class="text-lg font-semibold">Weekly Spending Analytics</h4>
+    <span class="text-xs text-indigo-600 dark:text-indigo-400 font-medium bg-indigo-50 dark:bg-slate-800 px-2.5 py-1 rounded-full">Canvas Engine</span>
+  </div>
+  <div class="w-full overflow-x-auto">
+    <canvas id="analyticsChart" width="600" height="220" class="mx-auto block max-w-full"></canvas>
+  </div>
+</div>
+
+<div class="grid md:grid-cols-2 gap-6">
+
+<div class="bg-slate-50 dark:bg-slate-900 rounded-2xl border dark:border-slate-700 p-6 relative overflow-hidden">
+<div class="flex justify-between items-center mb-4">
+  <h4 class="text-xl font-semibold">Recent Transactions</h4>
+  <button id="triggerLoaderBtn" class="text-xs text-indigo-600 dark:text-indigo-400 hover:underline">Simulate Sync</button>
+</div>
+
+<div id="transactionsLoader" class="hidden space-y-4 absolute inset-x-0 top-16 bottom-0 bg-slate-50 dark:bg-slate-900 p-6 z-20">
+  <div class="animate-pulse flex justify-between items-center">
+    <div class="h-4 bg-slate-300 dark:bg-slate-700 rounded w-1/3"></div>
+    <div class="h-4 bg-slate-300 dark:bg-slate-700 rounded w-1/6"></div>
+  </div>
+  <div class="animate-pulse flex justify-between items-center">
+    <div class="h-4 bg-slate-300 dark:bg-slate-700 rounded w-1/2"></div>
+    <div class="h-4 bg-slate-300 dark:bg-slate-700 rounded w-1/4"></div>
+  </div>
+  <div class="animate-pulse flex justify-between items-center">
+    <div class="h-4 bg-slate-300 dark:bg-slate-700 rounded w-1/4"></div>
+    <div class="h-4 bg-slate-300 dark:bg-slate-700 rounded w-1/6"></div>
+  </div>
+  <div class="animate-pulse flex justify-between items-center">
+    <div class="h-4 bg-slate-300 dark:bg-slate-700 rounded w-2/5"></div>
+    <div class="h-4 bg-slate-300 dark:bg-slate-700 rounded w-1/5"></div>
+  </div>
+</div>
+
+<div id="transactionsList" class="space-y-4">
+<div class="flex justify-between">
+<span>Netflix Subscription</span>
+<span class="text-red-500 font-medium">- ₦6,500</span>
+</div>
+
+<div class="flex justify-between">
+<span>Salary Payment</span>
+<span class="text-green-600 dark:text-green-400 font-medium">+ ₦250,000</span>
+</div>
+
+<div class="flex justify-between">
+<span>Transfer to John</span>
+<span class="text-red-500 font-medium">- ₦20,000</span>
+</div>
+
+<div class="flex justify-between">
+<span>Food Delivery</span>
+<span class="text-red-500 font-medium">- ₦8,000</span>
+</div>
+</div>
+</div>
+
+<div class="bg-slate-50 dark:bg-slate-900 rounded-2xl border dark:border-slate-700 p-6">
+<h4 class="text-xl font-semibold mb-4">Quick Transfer</h4>
+
+<form class="space-y-4" onsubmit="event.preventDefault(); alert('Transfer processed successfully!');">
+<input type="text" placeholder="Recipient Name" class="w-full p-3 border dark:border-slate-700 dark:bg-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+<input type="number" placeholder="Amount" class="w-full p-3 border dark:border-slate-700 dark:bg-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+<input type="text" placeholder="Bank Name" class="w-full p-3 border dark:border-slate-700 dark:bg-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+
+<button type="submit" class="w-full bg-indigo-700 hover:bg-indigo-800 text-white p-3 rounded-lg font-semibold transition">
+Send Money
+</button>
+</form>
+
+</div>
+
+</div>
+</div>
+</div>
+
+<div id="paymentsPanel" class="hidden mt-8">
+<button class="backBtn mb-6 bg-slate-200 dark:bg-slate-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-lg">← Back</button>
+<div class="bg-white dark:bg-slate-800 rounded-2xl shadow p-6 max-w-4xl">
+<h3 class="text-2xl font-semibold mb-6">Payments & Bills</h3>
+
+<div class="flex border-b dark:border-slate-700 mb-6 overflow-x-auto gap-2">
+  <button id="tabBtn-bills" onclick="switchPaymentTab('bills')" class="px-4 py-2 border-b-2 border-indigo-600 font-medium text-sm text-indigo-600 whitespace-nowrap">💡 Pay Utility Bills</button>
+  <button id="tabBtn-airtime" onclick="switchPaymentTab('airtime')" class="px-4 py-2 border-b-2 border-transparent font-medium text-sm text-gray-500 dark:text-gray-400 hover:text-indigo-600 whitespace-nowrap">📱 Buy Airtime/Data</button>
+  <button id="tabBtn-request" onclick="switchPaymentTab('request')" class="px-4 py-2 border-b-2 border-transparent font-medium text-sm text-gray-500 dark:text-gray-400 hover:text-indigo-600 whitespace-nowrap">💰 Request Money</button>
+</div>
+
+<div id="paymentTabContent" class="bg-slate-50 dark:bg-slate-900 p-6 rounded-xl border dark:border-slate-700">
+  </div>
+</div>
+</div>
+
+<div id="cardsPanel" class="hidden mt-8">
+<button class="backBtn mb-6 bg-slate-200 dark:bg-slate-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-lg">← Back</button>
+<div class="max-w-xl space-y-6">
+  
+  <div id="cardsDisplayContainer" class="space-y-4">
+    <div id="defaultDebitCard" class="relative bg-gradient-to-r from-indigo-700 via-purple-600 to-pink-500 rounded-3xl p-8 text-white shadow-xl transition-all duration-300">
+      <div id="frozenOverlay" class="hidden absolute inset-0 bg-slate-900/80 backdrop-blur-sm rounded-3xl z-20 flex flex-col items-center justify-center">
+        <span class="text-4xl">❄️</span>
+        <p class="text-lg font-bold mt-2">Card Status: Frozen</p>
+      </div>
+      
+      <div class="flex justify-between items-start">
+        <h3 class="text-2xl font-bold">Debit Card</h3>
+        <span class="text-xs font-bold bg-white/20 px-2 py-1 rounded">Naira Account</span>
+      </div>
+      <p id="cardDisplayDigits" class="text-2xl tracking-widest mt-8 font-mono">**** **** **** 4821</p>
+      <div class="flex justify-between items-center mt-6 text-sm">
+        <div>
+          <p class="text-xs text-white/60">EXPIRY</p>
+          <p id="cardDisplayExpiry" class="font-mono">12/28</p>
+        </div>
+        <div>
+          <p class="text-xs text-white/60">CVV</p>
+          <p id="cardDisplayCvv" class="font-mono">***</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white dark:bg-slate-800 rounded-2xl shadow p-6 flex flex-wrap gap-3 justify-between items-center">
+    <div class="flex gap-2">
+      <button onclick="toggleCardSensitiveDetails()" class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-xs font-semibold px-4 py-2 rounded-lg transition">👁 Show/Hide Details</button>
+      <button id="freezeCardBtn" onclick="toggleFreezeState()" class="bg-amber-500 text-white text-xs font-semibold px-4 py-2 rounded-lg hover:bg-amber-600 transition">❄️ Freeze Card</button>
+    </div>
+    <button onclick="toggleCardModal(true)" class="bg-indigo-700 hover:bg-indigo-800 text-white text-xs font-semibold px-4 py-2 rounded-lg transition">➕ Generate New Card</button>
+  </div>
+</div>
+</div>
+
+<div id="beneficiariesPanel" class="hidden mt-8">
+<button class="backBtn mb-6 bg-slate-200 dark:bg-slate-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-lg">← Back</button>
+
+<div class="bg-white dark:bg-slate-800 rounded-2xl shadow p-6 max-w-2xl">
+<div class="flex justify-between items-center mb-6">
+  <h3 class="text-2xl font-semibold">People you send money to often:</h3>
+  <button onclick="toggleBeneficiaryModal(true)" class="bg-indigo-700 hover:bg-indigo-800 text-white text-xs font-bold px-3 py-2 rounded-lg transition">➕ Add New</button>
+</div>
+
+<div id="beneficiariesGrid" class="space-y-4">
+  <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border dark:border-slate-700 flex justify-between items-center"><span>Edefo Divine</span><span class="text-xs text-gray-400 font-mono">Saved</span></div>
+  <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border dark:border-slate-700 flex justify-between items-center"><span>Gift Osasu</span><span class="text-xs text-gray-400 font-mono">Saved</span></div>
+  <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border dark:border-slate-700 flex justify-between items-center"><span>John A</span><span class="text-xs text-gray-400 font-mono">Saved</span></div>
+  <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border dark:border-slate-700 flex justify-between items-center"><span>Mum</span><span class="text-xs text-gray-400 font-mono">Saved</span></div>
+</div>
+
+</div>
+</div>
+
+<div id="profilePanel" class="hidden mt-8">
+<button class="backBtn mb-6 bg-slate-200 dark:bg-slate-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-lg">← Back</button>
+<div class="bg-white dark:bg-slate-800 rounded-2xl shadow p-6 max-w-2xl">
+  <h3 class="text-2xl font-semibold mb-4">User Profile</h3>
+  <div class="flex items-center gap-4 border-b dark:border-slate-700 pb-6 mb-6">
+    <div class="w-16 h-16 bg-indigo-100 text-indigo-700 dark:bg-slate-900 dark:text-white rounded-full flex items-center justify-center font-bold text-xl">FI</div>
+    <div>
+      <h4 class="text-xl font-bold">Fidelis</h4>
+      <p class="text-sm text-gray-400">Verified Personal Account</p>
+    </div>
+  </div>
+  <div class="space-y-3">
+    <p><strong>Email Address:</strong> f*****@fidepay.com</p>
+    <p><strong>Tier Limit:</strong> Level 3 Premium (Unlimited Access)</p>
+  </div>
+</div>
+</div>
+
+</main>
+</div>
+
+<div id="cardGenerationModal" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+  <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-xl max-w-md w-full border dark:border-slate-700">
+    <h3 class="text-xl font-bold mb-4">Mint Virtual Payment Card</h3>
+    <form onsubmit="handleVirtualCardCreation(event)" class="space-y-4">
+      <div>
+        <label class="block text-xs font-bold mb-1 opacity-70">SELECT CURRENCY DENOMINATION</label>
+        <select id="modalCardCurrency" class="w-full p-2.5 rounded-lg border dark:border-slate-700 dark:bg-slate-900 focus:ring-2 focus:ring-indigo-500 outline-none">
+          <option value="USD">🇺🇸 Dollar Virtual Account ($5.00 Issuance Fee)</option>
+          <option value="NGN">🇳🇬 Naira Virtual Account (Free Account Scheme)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs font-bold mb-1 opacity-70">VIRTUAL CARD LABEL ALIAS</label>
+        <input type="text" id="modalCardLabel" required placeholder="e.g. Shopping Card, Subscriptions" class="w-full p-2.5 rounded-lg border dark:border-slate-700 dark:bg-slate-900 focus:ring-2 focus:ring-indigo-500 outline-none">
+      </div>
+      <div class="flex gap-2 justify-end pt-2">
+        <button type="button" onclick="toggleCardModal(false)" class="bg-slate-100 dark:bg-slate-700 text-sm px-4 py-2 rounded-lg">Cancel</button>
+        <button type="submit" class="bg-indigo-700 hover:bg-indigo-800 text-white text-sm px-4 py-2 rounded-lg font-semibold transition">Issue Card</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="beneficiaryAdditionModal" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+  <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-xl max-w-md w-full border dark:border-slate-700">
+    <h3 class="text-xl font-bold mb-4">Save Target Beneficiary</h3>
+    <form onsubmit="handleBeneficiaryRegistration(event)" class="space-y-4">
+      <div>
+        <label class="block text-xs font-bold mb-1 opacity-70">FULL LEGAL NAME</label>
+        <input type="text" id="modalBeneficiaryName" required placeholder="Enter name string descriptor" class="w-full p-2.5 rounded-lg border dark:border-slate-700 dark:bg-slate-900 focus:ring-2 focus:ring-indigo-500 outline-none">
+      </div>
+      <div class="flex gap-2 justify-end pt-2">
+        <button type="button" onclick="toggleBeneficiaryModal(false)" class="bg-slate-100 dark:bg-slate-700 text-sm px-4 py-2 rounded-lg">Cancel</button>
+        <button type="submit" class="bg-indigo-700 hover:bg-indigo-800 text-white text-sm px-4 py-2 rounded-lg font-semibold transition">Save Record</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<script>
+const sidebar = document.getElementById('sidebar');
+const menuBtn = document.getElementById('menuBtn');
+const overlay = document.getElementById('overlay');
+
+menuBtn.onclick = () => {
+sidebar.classList.toggle('-translate-x-full');
+overlay.classList.toggle('hidden');
+};
+
+overlay.onclick = () => {
+sidebar.classList.add('-translate-x-full');
+overlay.classList.add('hidden');
+};
+
+const sections = ['homePage','dashboardPanel','paymentsPanel','cardsPanel','beneficiariesPanel','profilePanel'];
+
+function openSection(id){
+sections.forEach(s => document.getElementById(s).classList.add('hidden'));
+document.getElementById(id).classList.remove('hidden');
+sidebar.classList.add('-translate-x-full');
+overlay.classList.add('hidden');
+
+if(id === 'dashboardPanel') {
+  setTimeout(initAnimatedChart, 50);
+}
+if(id === 'paymentsPanel') {
+  switchPaymentTab('bills'); // Initialize view tab execution default tracking context
+}
+}
+
+// Sidebar links mapping logic
+document.getElementById('dashboardLink').onclick = e => { e.preventDefault(); openSection('dashboardPanel'); };
+document.getElementById('paymentsLink').onclick = e => { e.preventDefault(); openSection('paymentsPanel'); };
+document.getElementById('cardsLink').onclick = e => { e.preventDefault(); openSection('cardsPanel'); };
+document.getElementById('beneficiariesLink').onclick = e => { e.preventDefault(); openSection('beneficiariesPanel'); };
+document.getElementById('profileLink').onclick = e => { e.preventDefault(); openSection('profilePanel'); };
+
+document.querySelectorAll('.backBtn').forEach(btn => {
+btn.onclick = () => openSection('homePage');
+});
+
+/* BALANCE CONTROLS & LIVE SIMULATION */
+const balanceAmount = document.getElementById('balanceAmount');
+const hideBalanceBtn = document.getElementById('hideBalanceBtn');
+const refreshBalanceBtn = document.getElementById('refreshBalanceBtn');
+const refreshIcon = document.getElementById('refreshIcon');
+const balanceTrend = document.getElementById('balanceTrend');
+
+let hidden = false;
+let currentRawBalance = 1250000;
+
+function formatNaira(amount) {
+  return '₦' + amount.toLocaleString('en-US');
+}
+
+hideBalanceBtn.onclick = () => {
+hidden = !hidden;
+
+if(hidden){
+balanceAmount.textContent = '••••••••';
+hideBalanceBtn.textContent = '👁 Show Balance';
+} else {
+balanceAmount.textContent = formatNaira(currentRawBalance);
+hideBalanceBtn.textContent = '👁 Hide Balance';
+}
+};
+
+refreshBalanceBtn.onclick = () => {
+balanceAmount.classList.add('opacity-40');
+refreshIcon.classList.add('animate-spin', 'inline-block');
+
+setTimeout(() => {
+  balanceAmount.classList.remove('opacity-40');
+  refreshIcon.classList.remove('animate-spin', 'inline-block');
+  
+  if(!hidden) {
+    const flux = Math.floor(Math.random() * 10000) - 5000;
+    currentRawBalance += flux;
+    balanceAmount.textContent = formatNaira(currentRawBalance);
+    
+    balanceTrend.textContent = flux >= 0 ? `+₦${flux.toLocaleString()}` : `-₦${Math.abs(flux).toLocaleString()}`;
+    balanceTrend.className = `text-xs font-semibold px-2 py-1 rounded transition-all ${flux >= 0 ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' : 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'}`;
+    balanceTrend.classList.remove('hidden');
+    
+    setTimeout(() => balanceTrend.classList.add('hidden'), 2500);
+  }
+}, 800);
+};
+
+/* DARK MODE LOGIC */
+const darkModeToggle = document.getElementById('darkModeToggle');
+const themeIcon = document.getElementById('themeIcon');
+
+darkModeToggle.onclick = () => {
+  document.documentElement.classList.toggle('dark');
+  const isDark = document.documentElement.classList.contains('dark');
+  themeIcon.textContent = isDark ? '☀️' : '🌙';
+  
+  if(!document.getElementById('dashboardPanel').classList.contains('hidden')) {
+    initAnimatedChart();
+  }
+};
+
+/* ANIMATED TRANSACTION LOADING */
+const triggerLoaderBtn = document.getElementById('triggerLoaderBtn');
+const transactionsLoader = document.getElementById('transactionsLoader');
+
+triggerLoaderBtn.onclick = () => {
+  transactionsLoader.classList.remove('hidden');
+  setTimeout(() => {
+    transactionsLoader.classList.add('hidden');
+  }, 1200);
+};
+
+/* FEATURE 1: INTERACTIVE BILL PAYMENTS INTERFACE DRIVER MAPS */
+function openPaymentsSubView(targetSubKey) {
+  openSection('paymentsPanel');
+  switchPaymentTab(targetSubKey);
+}
+
+function switchPaymentTab(tabKey) {
+  const tabs = ['bills', 'airtime', 'request'];
+  tabs.forEach(t => {
+    const btn = document.getElementById(`tabBtn-${t}`);
+    if(t === tabKey) {
+      btn.className = "px-4 py-2 border-b-2 border-indigo-600 font-medium text-sm text-indigo-600 whitespace-nowrap";
+    } else {
+      btn.className = "px-4 py-2 border-b-2 border-transparent font-medium text-sm text-gray-500 dark:text-gray-400 hover:text-indigo-600 whitespace-nowrap";
+    }
+  });
+
+  const container = document.getElementById('paymentTabContent');
+  if(tabKey === 'bills') {
+    container.innerHTML = `
+      <form onsubmit="event.preventDefault(); alert('Utility payment transaction synchronized successfully!');" class="space-y-4 max-w-xl">
+        <h4 class="font-bold text-lg mb-2">Pay Utility Bill Gateway</h4>
+        <div>
+          <label class="block text-xs font-bold mb-1 opacity-70">SELECT DISTRIBUTION DISCO COMPANY</label>
+          <select class="w-full p-3 border dark:border-slate-700 dark:bg-slate-800 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500">
+            <option>IKEDC (Ikeja Electricity Distribution)</option>
+            <option>EKEDC (Eko Electricity Distribution)</option>
+            <option>AEDC (Abuja Electricity Distribution)</option>
+          </select>
+        </div>
+        <input type="text" required placeholder="Meter Number reference string" class="w-full p-3 border dark:border-slate-700 dark:bg-slate-800 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500">
+        <input type="number" required placeholder="Amount (₦)" class="w-full p-3 border dark:border-slate-700 dark:bg-slate-800 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500">
+        <button type="submit" class="bg-indigo-700 text-white font-bold p-3 w-full rounded-lg hover:bg-indigo-800 transition">Process Settlement</button>
+      </form>`;
+  } else if (tabKey === 'airtime') {
+    container.innerHTML = `
+      <form onsubmit="event.preventDefault(); alert('Airtime request sent successfully!');" class="space-y-4 max-w-xl">
+        <h4 class="font-bold text-lg mb-2">Buy Airtime & Data Gateway</h4>
+        <div>
+          <label class="block text-xs font-bold mb-1 opacity-70">TELECOMMUNICATIONS NETWORK OPERATOR</label>
+          <div class="grid grid-cols-4 gap-2">
+            <label class="border dark:border-slate-700 p-2 rounded-lg text-center font-bold text-xs cursor-pointer bg-white dark:bg-slate-800 block"><input type="radio" name="telco" required class="mr-1">MTN</label>
+            <label class="border dark:border-slate-700 p-2 rounded-lg text-center font-bold text-xs cursor-pointer bg-white dark:bg-slate-800 block"><input type="radio" name="telco" class="mr-1">Airtel</label>
+            <label class="border dark:border-slate-700 p-2 rounded-lg text-center font-bold text-xs cursor-pointer bg-white dark:bg-slate-800 block"><input type="radio" name="telco" class="mr-1">Glo</label>
+            <label class="border dark:border-slate-700 p-2 rounded-lg text-center font-bold text-xs cursor-pointer bg-white dark:bg-slate-800 block"><input type="radio" name="telco" class="mr-1">9mobile</label>
+          </div>
+        </div>
+        <input type="tel" required placeholder="Recipient Phone Line Mobile Sequence" class="w-full p-3 border dark:border-slate-700 dark:bg-slate-800 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500">
+        <input type="number" required placeholder="Top-up Amount (₦)" class="w-full p-3 border dark:border-slate-700 dark:bg-slate-800 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500">
+        <button type="submit" class="bg-indigo-700 text-white font-bold p-3 w-full rounded-lg hover:bg-indigo-800 transition">Dispense Airtime</button>
+      </form>`;
+  } else if (tabKey === 'request') {
+    container.innerHTML = `
+      <div class="max-w-xl space-y-4">
+        <h4 class="font-bold text-lg mb-2">Generate Smart Request Invoice Link</h4>
+        <p class="text-sm opacity-75">Generate payment requests. Receivers can click link configurations to pay out straight into your balance securely.</p>
+        <input type="number" id="requestInvoiceAmount" placeholder="Requested Amount Value Target (₦)" class="w-full p-3 border dark:border-slate-700 dark:bg-slate-800 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500">
+        <button onclick="const amt = document.getElementById('requestInvoiceAmount').value; if(!amt){alert('Please type an absolute value string');return;} prompt('Copy outbound payment payment invoice tracking handle link:', 'https://fidepay.me/request/fidelis/' + amt);" class="bg-indigo-700 text-white font-bold p-3 w-full rounded-lg hover:bg-indigo-800 transition">Create Active Link Handle</button>
+      </div>`;
+  }
+}
+
+/* FEATURE 2: ADVANCED INTERACTIVE VIRTUAL CARD PLATFORM MODULES */
+let isCardRevealed = false;
+let isCardFrozen = false;
+
+function toggleCardSensitiveDetails() {
+  if(isCardFrozen) { alert('Unfreeze card profile elements before structural data execution sweeps.'); return; }
+  isCardRevealed = !isCardRevealed;
+  document.getElementById('cardDisplayDigits').textContent = isCardRevealed ? "4138 9822 5621 4821" : "**** **** **** 4821";
+  document.getElementById('cardDisplayExpiry').textContent = isCardRevealed ? "08/30" : "12/28";
+  document.getElementById('cardDisplayCvv').textContent = isCardRevealed ? "714" : "***";
+}
+
+function toggleFreezeState() {
+  isCardFrozen = !isCardFrozen;
+  const overlayNode = document.getElementById('frozenOverlay');
+  const actionBtn = document.getElementById('freezeCardBtn');
+  if(isCardFrozen) {
+    overlayNode.classList.remove('hidden');
+    actionBtn.textContent = "🔥 Unfreeze Card";
+    actionBtn.className = "bg-green-600 text-white text-xs font-semibold px-4 py-2 rounded-lg hover:bg-green-700 transition";
+    if(isCardRevealed) toggleCardSensitiveDetails(); // Reset visualization safely
+  } else {
+    overlayNode.classList.add('hidden');
+    actionBtn.textContent = "❄️ Freeze Card";
+    actionBtn.className = "bg-amber-500 text-white text-xs font-semibold px-4 py-2 rounded-lg hover:bg-amber-600 transition";
+  }
+}
+
+function toggleCardModal(stateFlag) {
+  document.getElementById('cardGenerationModal').classList.toggle('hidden', !stateFlag);
+}
+
+function handleVirtualCardCreation(e) {
+  e.preventDefault();
+  const curr = document.getElementById('modalCardCurrency').value;
+  const lbl = document.getElementById('modalCardLabel').value;
+  
+  // Construct dynamic functional card node elements
+  const deck = document.getElementById('cardsDisplayContainer');
+  const gradient = curr === 'USD' ? 'from-emerald-600 to-teal-500' : 'from-purple-700 to-indigo-600';
+  const newCardHtml = `
+    <div class="relative bg-gradient-to-r ${gradient} rounded-3xl p-8 text-white shadow-xl animate-fade-in-up">
+      <div class="flex justify-between items-start">
+        <h3 class="text-2xl font-bold">${lbl}</h3>
+        <span class="text-xs font-bold bg-white/20 px-2 py-1 rounded">${curr} Account</span>
+      </div>
+      <p class="text-2xl tracking-widest mt-8 font-mono">${curr === 'USD' ? '4532' : '5399'} **** **** ${Math.floor(Math.random() * 9000 + 1000)}</p>
+      <div class="flex justify-between items-center mt-6 text-sm">
+        <div><p class="text-xs text-white/60">EXPIRY</p><p class="font-mono">10/31</p></div>
+        <div><p class="text-xs text-white/60">CVV</p><p class="font-mono">***</p></div>
+      </div>
+    </div>`;
+  
+  deck.insertAdjacentHTML('beforeend', newCardHtml);
+  toggleCardModal(false);
+  alert(`Virtual ${curr} "${lbl}" processed and active!`);
+  document.getElementById('modalCardLabel').value = '';
+}
+
+/* FEATURE 3: LIVE BENFICIARY STRUCTURAL STATE DRIVER LOGIC */
+function toggleBeneficiaryModal(stateFlag) {
+  document.getElementById('beneficiaryAdditionModal').classList.toggle('hidden', !stateFlag);
+}
+
+function handleBeneficiaryRegistration(e) {
+  e.preventDefault();
+  const nameNode = document.getElementById('modalBeneficiaryName');
+  const nameVal = nameNode.value.trim();
+  if(!nameVal) return;
+
+  const targetGrid = document.getElementById('beneficiariesGrid');
+  const templateRow = `
+    <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border dark:border-slate-700 flex justify-between items-center animate-fade-in">
+      <span>${nameVal}</span>
+      <span class="text-xs text-indigo-600 dark:text-indigo-400 font-bold bg-indigo-50 dark:bg-slate-800 px-2 py-1 rounded-full">New Record</span>
+    </div>`;
+  
+  targetGrid.insertAdjacentHTML('afterbegin', templateRow);
+  nameNode.value = '';
+  toggleBeneficiaryModal(false);
+}
+
+/* NATIVE CANVAS ANIMATED CHART ENGINE */
+function initAnimatedChart() {
+  const canvas = document.getElementById('analyticsChart');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  
+  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const targetDataPoints = [12000, 45000, 23000, 78000, 35000, 95000, 40000];
+  let currentProgress = 0;
+  
+  function drawLoop() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    const isDarkTheme = document.documentElement.classList.contains('dark');
+    const primaryColor = '#4f46e5'; 
+    const gridColor = isDarkTheme ? '#334155' : '#e2e8f0'; 
+    const textColor = isDarkTheme ? '#94a3b8' : '#64748b';
+    
+    const chartHeight = 160;
+    const paddingLeft = 50;
+    const paddingTop = 20;
+    const spacing = (canvas.width - paddingLeft - 30) / (days.length - 1);
+    
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = gridColor;
+    ctx.fillStyle = textColor;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    
+    for (let i = 0; i <= 4; i++) {
+      const y = paddingTop + (chartHeight / 4) * i;
+      const labelValue = 100000 - (25000 * i);
+      ctx.fillText('₦' + labelValue.toLocaleString(), paddingLeft - 10, y + 4);
+      
+      ctx.beginPath();
+      ctx.moveTo(paddingLeft, y);
+      ctx.lineTo(canvas.width - 20, y);
+      ctx.stroke();
+    }
+    
+    ctx.lineWidth = 3.5;
+    ctx.strokeStyle = primaryColor;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    
+    ctx.beginPath();
+    for (let i = 0; i < days.length; i++) {
+      const x = paddingLeft + (i * spacing);
+      const animatedValue = targetDataPoints[i] * currentProgress;
+      const y = paddingTop + chartHeight - (animatedValue / 100000) * chartHeight;
+      
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    
+    ctx.textAlign = 'center';
+    for (let i = 0; i < days.length; i++) {
+      const x = paddingLeft + (i * spacing);
+      const animatedValue = targetDataPoints[i] * currentProgress;
+      const y = paddingTop + chartHeight - (animatedValue / 100000) * chartHeight;
+      
+      ctx.beginPath();
+      ctx.arc(x, y, 4.5, 0, Math.PI * 2);
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = primaryColor;
+      ctx.stroke();
+      
+      ctx.fillStyle = textColor;
+      ctx.fillText(days[i], x, paddingTop + chartHeight + 20);
+    }
+    
+    if (currentProgress < 1) {
+      currentProgress += 0.05;
+      requestAnimationFrame(drawLoop);
+    }
+  }
+  
+  requestAnimationFrame(drawLoop);
+}
+</script>
+
+</body>
+</html>
